@@ -77,10 +77,11 @@ const AutoContinuePlugin = async (input: PluginInput): Promise<Hooks> => {
 
   return {
     event: async ({ event }) => {
-      const type = event.payload?.type || "unknown"
-      const props = event.payload?.properties || {}
-
-      await log(`Event received`, { type, props })
+      const keys = Object.keys(event).join(",")
+      const ev = event.event || event
+      const type = ev?.type || "unknown"
+      const props = ev?.properties || {}
+      await log(`Event received`, { keys, type })
 
       // Check for AssistantFinished event
       if (type === "session.assistant.finished") {

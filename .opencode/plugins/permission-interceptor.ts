@@ -31,8 +31,8 @@ const PermissionInterceptorPlugin = async (input) => {
 
   return {
     event: async ({ event }) => {
-      const type = event.payload?.type || "unknown"
-      const props = event.payload?.properties || {}
+      const type = event.event?.type || "unknown"
+      const props = event.event?.properties || {}
 
       // 监听权限请求事件
       if (type === "permission.asked") {
