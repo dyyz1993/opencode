@@ -50,12 +50,38 @@ const PermissionInterceptorPlugin = async (input) => {
           metadata,
         })
 
-        // 这里可以推送到外部系统
-        // 例如：飞书通知、手机推送、Webhook 等
-        // 外部系统收到后，可以调用 reply 端点回复
+        const autoApprovePatterns = (
+          process.env.PERMISSION_AUTO_APPROVE ?? ""
+        )
+          .split(",")
+          .filter(Boolean)
+        const shouldAutoApprove =
+          autoApprovePatterns.length === 0 ||
+          autoApprovePatterns.some(
+            (p) =>
+              permission?.includes(p) ||
+              patterns?.some((pat) => pat.includes(p)),
+          )
 
-        // 示例：推送通知到外部
-        // await pushToExternal(requestID, permission, patterns)
+        if (shouldAutoApprove) {
+          await log("Auto-approving permission", { requestID, permission })
+          try {
+            const res = await fetch(
+              `${serverUrl.origin}/permission/${requestID}/reply`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json", ...serverHeaders },
+                body: JSON.stringify({ reply: "once" }),
+              },
+            )
+            await log("Auto-approve result", {
+              status: res.status,
+              ok: res.ok,
+            })
+          } catch (err: any) {
+            await log("Auto-approve error", { error: String(err) })
+          }
+        }
       }
 
       // 监听权限回复事件
