@@ -29,6 +29,7 @@ export type PluginInput = {
   directory: string
   worktree: string
   serverUrl: URL
+  serverHeaders: Record<string, string>
   $: BunShell
 }
 

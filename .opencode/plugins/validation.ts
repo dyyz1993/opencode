@@ -10,7 +10,7 @@ import { join } from "node:path"
  */
 
 const ValidationPlugin = async (input) => {
-  const { directory, serverUrl } = input
+  const { directory, serverUrl, serverHeaders } = input
   const logPath = join(directory, ".opencode", "validation.log")
 
   await mkdir(join(directory, ".opencode"), { recursive: true })
@@ -47,7 +47,7 @@ const ValidationPlugin = async (input) => {
         try {
           const res = await fetch(url, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...serverHeaders },
             body: JSON.stringify({ parts: [{ type: "text", text: testPrompt }] }),
           })
 
@@ -91,7 +91,7 @@ const ValidationPlugin = async (input) => {
           try {
             const res = await fetch(url, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "application/json", ...serverHeaders },
               body: JSON.stringify({ parts: [{ type: "text", text: `[Validation] ${message}` }] }),
             })
 
