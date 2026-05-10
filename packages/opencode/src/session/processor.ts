@@ -262,6 +262,16 @@ export namespace SessionProcessor {
                     cost: usage.cost,
                   })
                   await Session.updateMessage(input.assistantMessage)
+
+                  // Publish event when assistant finishes (excluding tool-calls and unknown)
+                  if (value.finishReason && !["tool-calls", "unknown"].includes(value.finishReason)) {
+                    Bus.publish(Session.Event.AssistantFinished, {
+                      sessionID: input.sessionID,
+                      messageID: input.assistantMessage.id,
+                      finish: value.finishReason as any,
+                    })
+                  }
+
                   if (snapshot) {
                     const patch = await Snapshot.patch(snapshot)
                     if (patch.files.length) {

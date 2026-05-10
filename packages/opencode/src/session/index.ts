@@ -214,6 +214,14 @@ export namespace Session {
         error: MessageV2.Assistant.shape.error,
       }),
     ),
+    AssistantFinished: BusEvent.define(
+      "session.assistant.finished",
+      z.object({
+        sessionID: SessionID.zod,
+        messageID: MessageID.zod,
+        finish: MessageV2.Assistant.shape.finish.optional(),
+      }),
+    ),
   }
 
   export const create = fn(
